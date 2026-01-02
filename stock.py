@@ -32,7 +32,6 @@ def check_threshold_alarm(qty: int, key: str, alarms: List[str]) -> None:
     if qty <= SEUIL_ALERTE:
         print(f"[LOG] Surveillance : Stock faible sur {key} ({qty} restants)")
     else:
-        # Ici on pourrait retirer une alarme existante
         pass
 
 def add_single_product(stock: Dict[str, deque], prod_str: str, alarms: List[str]) -> None:
@@ -43,11 +42,9 @@ def add_single_product(stock: Dict[str, deque], prod_str: str, alarms: List[str]
     p_type, p_vol = parse_product_info(prod_str)
     p_key = f"{p_type}{p_vol}"
     
-    # 1. Gestion physique (FIFO : entrée à gauche)
     queue = get_or_create_queue(stock, p_key)
-    queue.appendleft(f"{p_key}_ID_{len(queue)}")  # Simulation d'un ID unique
+    queue.appendleft(f"{p_key}_ID_{len(queue)}")
     
-    # 2. Gestion Métier (Vérification Alarme)
     check_threshold_alarm(len(queue), p_key, alarms)
 
 def process_batch_input(batch_str: str, stock: Dict[str, deque], alarms: List[str]) -> None:
@@ -58,16 +55,13 @@ def process_batch_input(batch_str: str, stock: Dict[str, deque], alarms: List[st
     raw_list = batch_str.split(',')
     
     for item in raw_list:
-        if item.strip():  # Ignore les chaînes vides
+        if item.strip():
             add_single_product(stock, item, alarms)
 
-# --- Zone de Test (Simulation du Main) ---
 if __name__ == "__main__":
-    # Initialisation des structures de données
-    mon_stock = {}     # Dictionnaire de Deques
-    mes_logs = []      # Liste simple pour les logs
+    mon_stock = {}
+    mes_logs = []
     
-    # Scénario : Ajout par paquet comme demandé dans le PDF
     saisie_utilisateur = "A1, A1, B5, C1"
     print(f"Saisie : {saisie_utilisateur}")
     
